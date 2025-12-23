@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список заданий - Генератор конспектов</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            border-radius: 2px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            margin-bottom: 30px;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            color: white;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(46, 204, 113, 0.4);
+        }
+        
+        .tasks-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tasks-table thead {
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .tasks-table th {
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        .tasks-table tbody tr {
+            border-bottom: 1px solid #ecf0f1;
+            transition: background-color 0.3s ease;
+        }
+        
+        .tasks-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .tasks-table td {
+            padding: 16px 15px;
+            vertical-align: top;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-success .status-badge {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        .status-error .status-badge {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .status-processing .status-badge {
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .status-queued .status-badge {
+            background: linear-gradient(to right, #f39c12, #e67e22);
+            color: white;
+        }
+        
+        .btn-download {
+            display: inline-block;
+            padding: 8px 16px;
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-weight: 500;
+            background: #ffeaea;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        
+        .task-details {
+            margin-top: 10px;
+        }
+        
+        .task-details p {
+            margin: 5px 0;
+        }
+        
+        @media (max-width: 992px) {
+            .container {
+                padding: 25px;
+            }
+            
+            .tasks-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .btn {
+                padding: 12px 24px;
+                font-size: 1em;
+            }
+            
+            .tasks-table th,
+            .tasks-table td {
+                padding: 12px 10px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Список конспектов</h1>
+
+        {% if tasks %}
+            <table class="tasks-table">
+                <thead>
+                    <tr>
+                        <th>Название лекции</th>
+                        <th>Статус</th>
+                        <th>Детали</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                        <tr class="{% if task.status == 'Успешно завершено' %}status-success{% elif task.status == 'Ошибка' %}status-error{% elif task.status == 'В обработке' %}status-processing{% else %}status-queued{% endif %}">
+                            <td>
+                                <strong>{{ task.task_title }}</strong>
+                                <div class="task-details">
+                                    <p><small><strong>ID:</strong> {{ task.task_id }}</small></p>
+                                    <p><small><strong>Создано:</strong> {{ task.created_at | format_datetime }}</small></p>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-badge">{{ task.status }}</span>
+                            </td>
+                            <td>
+                                <div class="task-details">
+                                    <p><small><strong>Ссылка на видео:</strong></small><br>
+                                    <a href="{{ task.video_url }}" target="_blank" style="word-break: break-all;">{{ task.video_url }}</a></p>
+                                    
+                                    {% if task.status == 'Успешно завершено' and task.pdf_url %}
+                                        <p><strong>PDF конспект:</strong><br>
+                                            <a href="{{ task.pdf_url }}" target="_blank" class="btn-download">Скачать PDF</a>
+                                        </p>
+                                    {% endif %}
+
+                                    {% if task.status == 'Ошибка' and task.error_message %}
+                                        <p><strong>Ошибка:</strong><br>
+                                            <span class="error-message">{{ task.error_message }}</span>
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="text-align: center; padding: 40px; color: #7f8c8d; font-size: 1.2em;">Задания не найдены.</p>
+        {% endif %}
+
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Назад к форме</a>
+        
+    </div>
+</body>
+</html>
