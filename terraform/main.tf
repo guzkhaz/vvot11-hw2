@@ -119,6 +119,7 @@ resource "yandex_storage_bucket" "bucket" {
   secret_key = yandex_iam_service_account_static_access_key.sa_static_key.secret_key
   bucket     = "${var.prefix}-bucket"
   acl        = "private"
+  force_destroy = true
 
   depends_on = [time_sleep.wait_for_sa_permissions]
 

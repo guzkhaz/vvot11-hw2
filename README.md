@@ -102,6 +102,6 @@ docker push cr.yandex/<registry_id>/hw2-web:latest
 docker push cr.yandex/<registry_id>/hw2-generator:latest
 ```
 
-Ссылка на скринкаст : [Яндекс.Диск]() 
+Ссылка на скринкаст : [Яндекс.Диск](https://disk.360.yandex.ru/d/752Vaw7OY-PDHg) 
 
    
